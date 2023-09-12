@@ -4,8 +4,9 @@ metadata:
   name: host-pv
 spec:
   capacity:
-    storage: 4Gi        # 4Gi=4 gigabytes  this is capacity of pods to store data
+    storage: 1Gi        # 4Gi=4 gigabytes  this is capacity of pods to store data
   volumeMode: Filesystem     # it can be block as well but for this project we storeing file
+  storageClassName: standard
   accessModes:
     - ReadWriteOnce
     # - ReadOnlyMany    # hostpath not support 
