@@ -275,7 +275,7 @@ Why  we are using persistent
 First we create a perisitent volumen file then we create a claim file
 
 host.pv.yaml file
-
+--------------------------------------------------------
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -292,5 +292,89 @@ spec:
     path: /data
     type: DirectoryOrCreate
 
+now we will claim the persistent volume
+--------------------------------------------------------
+host-pvc.yaml
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: host-pvc
+spec:
+  volumeName: host-pv
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+    storage: 1Gi  
+
+--------------------------------------------------------
+
+Now we will go to deployment file and make connection with persitent claim volume
+
+deployment.yaml file
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec:
+  replicas: 2
+  selector: 
+    matchLabels:
+      app: story
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+        - name: story
+          image: appdockers/kube-data-demo:2 
+          volumeMounts:
+            - mountPath: /app/story 
+              name: story-volume
+      volumes:
+        - name: story-volume
+          # hostPath:
+          #   path: /data
+          #   type: DirectoryOrCreate 
+          persistentVolumeClaim:
+            claimName: host-pvc
 
 
+Also add the storage class name 
+you will get the storage class name using 
+
+also to the storage class configuration in host-pv.yaml or host-pvc.yaml file
+
+storageClassName: standard
+
+and then run the file
+
+kubectl apply -f=host-pvc.yaml
+kubectl apply -f=host-pv.yaml
+kubectl apply -f=deployment.yaml
+
+kubectl get pv
+kubectl get pvc
+
+macbookair@Macbooks-MacBook-Air kub-data-01-starting-setup % kubectl get pv
+NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM              STORAGECLASS   REASON   AGE
+host-pv   1Gi        RWO            Retain           Bound    default/host-pvc   standard                17m
+
+
+
+macbookair@Macbooks-MacBook-Air kub-data-01-starting-setup % kubectl get pvc
+NAME       STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+host-pvc   Bound    host-pv   1Gi        RWO            standard       13m
+
+
+
+macbookair@Macbooks-MacBook-Air kub-data-01-starting-setup % kubectl get deployments
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+story-deployment   2/2     2            2           3h57m
+
+now run $ minikube service story-service
+
+now everything will run on get and post story api and data also persist
