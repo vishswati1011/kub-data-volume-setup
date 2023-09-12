@@ -94,7 +94,7 @@ will add error route in app.js to crash the container
  add will add volume in deployment.yaml
    
 
-![How to add EmptyDir in container](images/volumeEmptyDir.png)
+[How to add EmptyDir in container](images/volumeEmptyDir.png)
 
 emptyDir: 
           its create a empty dir when a pods will start and filled with data as long as the pod is live  
