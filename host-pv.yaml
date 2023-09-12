@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity:
+    storage: 4Gi        # 4Gi=4 gigabytes  this is capacity of pods to store data
+  volumeMode: Filesystem     # it can be block as well but for this project we storeing file
+  accessModes:
+    - ReadWriteOnce
+    # - ReadOnlyMany    # hostpath not support 
+    # - ReadWriteMany   # hostpath not support 
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
