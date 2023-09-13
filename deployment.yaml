@@ -15,6 +15,12 @@ spec:
       containers:
         - name: story
           image: appdockers/kube-data-demo:2 
+          env: 
+            - name: STORY_FOLDER
+              valueFrom: 
+                configMapKeyRef: 
+                  name: data-store-env
+                  key: folder
           volumeMounts:
             - mountPath: /app/story 
               name: story-volume

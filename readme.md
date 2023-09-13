@@ -378,3 +378,98 @@ story-deployment   2/2     2            2           3h57m
 now run $ minikube service story-service
 
 now everything will run on get and post story api and data also persist
+
+Envoirnment Variable 
+
+if you want to use env variable to take folder name
+const filePath = path.join(__dirname, 'story', 'text.txt');
+
+then
+
+const filePath = path.join(__dirname, process.env.STORY_FOLDER, 'text.txt');
+
+then configure this in deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec:
+  replicas: 2
+  selector: 
+    matchLabels:
+      app: story
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+        - name: story
+          image: appdockers/kube-data-demo:2 
+          env: 
+            - name: STORY_FOLDER
+              value: story
+          volumeMounts:
+            - mountPath: /app/story 
+              name: story-volume
+      volumes:
+        - name: story-volume
+          # hostPath:
+          #   path: /data
+          #   type: DirectoryOrCreate 
+          persistentVolumeClaim:
+            claimName: host-pvc
+            
+Second Way
+Or you can create a separate file fo environment.yaml
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-store-env
+data:
+  folder: 'story'
+
+you can also apply this 
+$ kucectl apply -f=environment.yaml  
+$ kubectl get configmap
+
+now to the changes in deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-deployment
+spec:
+  replicas: 2
+  selector: 
+    matchLabels:
+      app: story
+  template:
+    metadata:
+      labels:
+        app: story
+    spec:
+      containers:
+        - name: story
+          image: appdockers/kube-data-demo:2 
+          env: 
+            - name: STORY_FOLDER
+              valueFrom: 
+                configMapKeyRef: 
+                  name: data-store-env
+                  key: folder
+          volumeMounts:
+            - mountPath: /app/story 
+              name: story-volume
+      volumes:
+        - name: story-volume
+          # hostPath:
+          #   path: /data
+          #   type: DirectoryOrCreate 
+          persistentVolumeClaim:
+            claimName: host-pvc
+            
+
+
