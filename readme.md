@@ -506,3 +506,7 @@ to start service on ip
 $ minikube service story-service
 to see kubernetes dashboard
 $ minikube dashboard
+
+
+to run this project without kubernetes using docker-compose you can
+$ docker-compose up -d --build .
