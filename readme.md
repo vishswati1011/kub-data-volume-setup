@@ -472,4 +472,37 @@ spec:
             claimName: host-pvc
             
 
+after then apply deployment.yaml
+$ docker apply -f deployment.yaml
+$ minikube service story-service
+and then check on postman all api call of story  routes get post and error           
 
+
+
+finally to run this repo on using docker and kubernetes you need to run some command 
+
+Requirement 
+docker install on local
+
+start minikube
+$ minikube start
+
+first create image
+$ docker build -t appdockers/kube-data-demo:2 .
+
+also check the version in deployement
+# docker push appdockers/kube-data-demo:2
+$ kubectl apply -f=service.yaml
+$ kubectl apply -f=deployment.yaml
+$ kubectl apply -f=host-pv.yaml
+$ kubectl apply -f=host-pvc.yaml
+$ kubectl apply -f=environment.yaml
+to see running service
+$ kubtctl get pods
+$ kubectl get deployments
+$ minikube get service
+$ kubtctl get configmap
+to start service on ip 
+$ minikube service story-service
+to see kubernetes dashboard
+$ minikube dashboard
